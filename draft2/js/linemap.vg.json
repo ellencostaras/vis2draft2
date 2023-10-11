@@ -1,0 +1,136 @@
+{
+    "schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "width": 400,
+    "height": 200,
+    "title": {
+        "text": "2022 Trade Partners Map",
+        "font": "Montserrat",
+        "fontSize": 16
+    },
+    "config": {
+        "padding": { 
+            "top": 10 
+        }
+    },
+    "projection": {
+        "type": "equalEarth"
+    },
+    "layer": [
+        {
+            "data": {
+                "url": "draft2/js/natural_earth_maps/ne_10m_ocean.json",
+                "format": {
+                    "type": "topojson",
+                    "feature": "ne_10m_ocean"
+                }
+            },
+            "mark": {
+                "type": "geoshape",
+                "fill": "skyblue"
+            }
+        },
+        {
+            "data": {
+                "url": "draft2/js/natural_earth_maps/ne_110m_graticules_30.json",
+                "format": {
+                    "type": "topojson",
+                    "feature": "ne_110m_graticules_30"
+                }
+            },
+            "mark": {
+                "type": "geoshape",
+                "fill": null,
+                "stroke": "lightgray"
+            }
+        },
+        {
+            "data": {
+                "url": "draft2/js/natural_earth_maps/ne_110m_admin_0_countries.json",
+                "format": {
+                    "type": "topojson",
+                    "feature": "ne_110m_admin_0_countries"
+                }
+            },
+            "mark": {
+                "type": "geoshape",
+                "fill": "#bfe633",
+                "stroke": "gray",
+                "strokeWidth": 0.5
+            }
+        },
+        {
+            "mark": {"type": "rule", "color": "#000", "opacity": 0.75},
+            "data": {"url": "draft2/data/linemap_data.csv"},
+            "transform": [
+                {   
+                    "filter": {"param": "org", "empty": false}                         
+                },    
+                {
+                    "lookup": "ReporterDesc",
+                    "from": {
+                        "data": {"url": "draft2/data/long_lat_per_country.csv"},
+                        "key": "name",
+                        "fields": ["latitude", "longitude"]
+                    }
+                },
+                {
+                    "lookup": "PartnerDesc",
+                    "from": {
+                        "data": {"url": "draft2/data/long_lat_per_country.csv"},
+                        "key": "name",
+                        "fields": ["latitude", "longitude"]
+                    },
+                    "as": ["lat2", "lon2"]
+                }
+            ],
+            "encoding": {
+                "latitude": {"field": "latitude"},
+                "longitude": {"field": "longitude"},
+                "latitude2": {"field": "lat2"},
+                "longitude2": {"field": "lon2"}
+            }
+        },
+        {
+            "mark": {
+                "type": "circle",
+                "color": "black"
+            },
+            "data": {"url": "draft2/data/linemap_data.csv"},
+            "transform": [
+                {"aggregate": [{"op": "count", "as": "outputs"}], "groupby": ["ReporterDesc"]},
+                {
+                "lookup": "ReporterDesc",
+                "from": {
+                    "data": {"url": "draft2/data/long_lat_per_country.csv"},
+                    "key": "name",
+                    "fields": ["name", "latitude", "longitude"]
+                }
+                }
+            ],
+            "params": [{
+                "name": "org",
+                "select": {
+                "type": "point",
+                "on": "mouseover",
+                "nearest": true,
+                "fields": ["ReporterDesc"]
+                }
+            }],
+            "encoding": {
+                "latitude": {"field": "latitude"},
+                "longitude": {"field": "longitude"},
+                "size": {
+                "field": "outputs",
+                "type": "quantitative",
+                "scale": {"rangeMax": 250},
+                "legend": null
+                },
+                "order": {
+                "field": "outputs",
+                "sort": "descending"
+                }
+            }
+            
+        }
+    ]
+}

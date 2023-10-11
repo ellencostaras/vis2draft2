@@ -1,0 +1,79 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "width": 400,
+    "height": 300,
+    "data": {
+        "url": "draft2/data/choropleth_data.csv"
+    },
+    "transform": [
+        { "calculate": "datum.PrimaryValue / datum.Qty", "as": "PricePerKg" },
+        { "filter": { 
+            "field": "ReporterDesc", 
+            "oneOf": ["Brazil", "France", "Germany", "India", "Italy", "South Korea", "Singapore", "South Africa", "Spain", "USA", "United Kingdom", "Tanzania"] 
+            } 
+        }
+    ],
+    "title": {
+        "text": "Price per kg over Time",
+        "font": "Montserrat",
+        "fontSize": 16
+    },
+    "config": {
+        "view": {
+            "strokeWidth": 0,
+            "step": 13
+        },
+        "axis": {
+            "domain": false
+        }
+    },
+    "mark": "rect",
+    "encoding": {
+        "x": {
+            "field": "RefYear",
+            "timeUnit": "year",
+            "type": "temporal",
+            "title": "Year",
+            "axis": {
+                "labelAngle": 0,
+                "format": "%Y",
+                "labelFont": "Montserrat",
+                "titleFont": "Montserrat"
+            }
+        },
+        "y": {
+            "field": "ReporterDesc",
+            "type": "nominal",
+            "title": null,
+            "sort": {
+                "field": "Qty",
+                "op": "sum",
+                "order": "descending"
+            },
+            "axis": {
+                "labelFont": "Montserrat",
+                "titleFont": "Montserrat"
+            }
+        },
+        "color": {
+            "field": "PricePerKg",
+            "type": "quantitative",
+            "scale": { "scheme": "lightmulti"},
+            "legend": {
+                "title": "$ per 1kg",
+                "titleFont": "Montserrat",
+                "labelFont": "Montserrat",
+                "orient": "bottom",
+                "offset": 0
+            }
+        },
+        "tooltip": [
+            {
+              "field": "PricePerKg",
+              "type": "quantitative",
+              "title": "$/kg",
+              "format": ".2f"
+            }
+          ]
+    }
+}

@@ -1,0 +1,77 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "width": 400,
+    "height": 50,
+    "title": {
+        "text": "Five Largest Exporters over Time",
+        "font": "Montserrat",
+        "fontSize": 16,
+        "dx": 120
+    },
+    "config": {},
+    "data": {
+        "url": "draft2/data/choropleth_data.csv"
+    },
+    "transform": [
+        { "filter": "datum.Qty !== '0'" },
+        { "filter": {
+            "field": "ReporterDesc",
+            "oneOf": ["India", "Myanmar", "Pakistan", "Tanzania", "Netherlands"]
+        }},
+        { "calculate": "datum.PrimaryValue / datum.Qty", "as": "PricePerKg" }
+    ],
+    "mark": {
+        "type": "area",
+        "interpolate": "basis",
+        "color": "black",
+        "opacity": 0.5
+    },
+    "encoding": {
+        "x": {
+            "field": "RefYear", 
+            "type": "temporal", 
+            "title": "Year",
+            "axis": {
+                "grid": false,
+                "labelFont": "Montserrat",
+                "titleFont": "Montserrat"
+            }
+        },
+        "y": {
+            "field": "Qty", 
+            "type": "quantitative", 
+            "stack": "zero", 
+            "title": null,
+            "axis": {
+                "labelAngle": 0,
+                "grid": false,
+                "tickCount": 1,
+                "labelFont": "Montserrat",
+                "titleFont": "Montserrat"
+            }
+        },
+        "row": {
+            "field": "ReporterDesc",
+            "sort": {
+                "field": "Qty",
+                "op": "sum",
+                "order": "descending"
+            },
+            "title": "kg exported, highest to lowest"
+        },
+        "tooltip": [
+            {
+                "field": "RefYear",
+                "type": "temporal",
+                "title": "Year",
+                "format": "%Y"
+            },
+            {
+              "field": "Qty",
+              "type": "quantitative",
+              "title": "kg",
+              "format": ".0f"
+            }
+        ]
+    }
+}  
